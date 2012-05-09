@@ -31,8 +31,11 @@ package object collection {
   }
   
   implicit def listImplicits[T](l: List[T]) = new {
+    def foreach[U](f: T => U): Unit =
+      l.foreach(f)
+    
     def map[U](f: T => U): List[U] =
-      l.map(f)     
+      l.map(f)
     
     def filter(f: T => Boolean): List[T] = 
       l.filter(f)
