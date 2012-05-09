@@ -16,11 +16,11 @@ Rationale
 
 [Scala](http://www.scala-lang.org) is a great language with countless advantages, and it is rather tightly coupled to its great [runtime library](file://localhost/Users/ochafik/bin/scala-2.10.0.latest-devel-docs/api/index.html).
 
-However, that library has grown big, as in 6-8MB big, and it's unlikely to ever go back below 5 MB.
+However, that library has grown big, as in 6-8MB big, and it's hard to imagine it could ever go back below 5 MB.
 
-That's okay for fat desktop or server apps, but not so much for Android or other embedded / real-time situations (where any library that creates lots of objects can be a threat anyway).
+That's okay for fat desktop or server apps, but probably slightly less so for Android or other embedded / real-time situations (where any library that creates lots of objects can be a threat anyway).
 
-Although my primary goal is to make Scala a natural alternative to Java on the Android platform, not having to depend on scala-library anymore might eventually make Scala (the language) more appealing to some Java software houses that see any new library dependency as a liability... What do **you** think ? 
+Although my primary goal is to make Scala a natural alternative to Java on the Android platform (smaller apps, no proguard...), not having to depend on scala-library anymore might eventually make Scala (the language) more appealing to some Java software houses that see any new library dependency as a liability... What do **you** think ? 
 
 What would still be possible in Scalight ?
 ==========================================
