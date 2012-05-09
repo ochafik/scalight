@@ -5,11 +5,11 @@ Scalight = Scala language MINUS scala-library
 In a nutshell
 =============
 
-**If Java is JVM's assembler, Scala is it's C++, and Scalight aims at being its C language.**
+**If Java is JVM's assembler and Scala is it's C++, then Scalight aims at becoming its embedded C language.**
 
 The goal of Scalight is to provide a minimalistic subset of the Scala language with virtually no runtime dependency on Scala-the-library (let's say less than 100kB of runtime dependencies as a first goal).
 
-Of course, this means getting a language that's close to Scala by the syntax but closer to raw Java by the power (still a few times more concise than Java, though).
+Of course, this means getting a language that's close to Scala by the syntax but closer to raw Java by the power (hopefully still much more concise than Java, though).
 
 Rationale
 =========
@@ -20,7 +20,7 @@ However, that library has grown big, as in 6-8MB big, and it's unlikely to ever 
 
 That's okay for fat desktop or server apps, but not so much for Android or other embedded / real-time situations (where any library that creates lots of objects can be a threat anyway).
 
-Although my primary goal is to make Scala a better contender on the Android platform, not having to depend on scala-library anymore could unlock some deciders in Java software houses... What do **you** think ? 
+Although my primary goal is to make Scala a natural alternative to Java on the Android platform, not having to depend on scala-library anymore might eventually make Scala (the language) more appealing to some Java software houses that see any new library dependency as a liability... What do **you** think ? 
 
 What would still be possible in Scalight ?
 ==========================================
@@ -55,5 +55,7 @@ That's it !
 
 Contribute / React
 ==================
+
+Please note that it's not the first time I try to trim Scala down : I'm guilty of writing [ScalaCL](http://code.google.com/p/scalacl/), which converts Scala to OpenCL and hence needed to get any runtime dependency of the converted code out of the way. This idea / project is a natural consequence of that first experience.
 
 [Ping me on Twitter](http://twitter.com/ochafik) !
