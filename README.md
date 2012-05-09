@@ -20,7 +20,22 @@ However, that library has grown big, as in 6-8MB big, and it's hard to imagine i
 
 That's okay for fat desktop or server apps, but probably slightly less so for Android or other embedded / real-time situations (where any library that creates lots of objects can be a threat anyway).
 
-Although my primary goal is to make Scala a natural alternative to Java on the Android platform (smaller apps, no proguard...), not having to depend on scala-library anymore might eventually make Scala (the language) more appealing to some Java software houses that see any new library dependency as a liability... What do **you** think ? 
+Although one of my long-term goals is to make Scala a natural alternative to Java on the Android platform (for smaller apps, no proguard...), not having to depend on scala-library anymore might eventually make Scala (the language) more appealing to some Java software houses that see any new library dependency as a liability... What do **you** think ?
+
+Scala on Android ? but...
+=========================
+
+... there are other projects much more advanced that help writing Scala programs for Android, and they'll always be infinitely superior to Scalight (if only, because they retain the full power of Scala).
+
+I haven't tested any of them yet, but here's a raw list for you to try :
+*   [android-plugin](https://github.com/jberkel/android-plugin)
+*   [Baitha](https://github.com/sattvik/baitha)
+*   [Positronic Net](https://github.com/rst/positronic_net)
+*   [treeshaker](http://code.google.com/p/treeshaker/)
+*   [scala-android-libs](https://github.com/scala-android-libs/scala-android-libs)
+*   [scala-android-crud](https://github.com/epabst/scala-android-crud)
+
+And probably lots more... Long story short : if you want to program on Android (or anywhere else) with the full Scala language & libraries, Scalight is definitely not for you. 
 
 What would still be possible in Scalight ?
 ==========================================
