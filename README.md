@@ -7,6 +7,8 @@ Not much left, but still way above Java !
 Rationale
 =========
 
+**If Java is JVM's assembler, Scala is it's C++, and Scalight aims at being its C language.**
+
 [Scala](http://www.scala-lang.org) is a great language with countless advantages, and it is rather tightly coupled to its great [runtime library](file://localhost/Users/ochafik/bin/scala-2.10.0.latest-devel-docs/api/index.html).
 
 However, that library has grown big, as in 6-8MB big, and it's unlikely to ever go back below 5 MB.
