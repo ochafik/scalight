@@ -56,6 +56,6 @@ That's it !
 Contribute / React
 ==================
 
-Please note that it's not the first time I try to trim Scala down : I'm guilty of writing [ScalaCL](http://code.google.com/p/scalacl/), which converts Scala to OpenCL and hence needed to get any runtime dependency of the converted code out of the way. This idea / project is a natural consequence of that first experience.
+Please note that it's not the first time I try to trim Scala down : I'm guilty of writing [ScalaCL](http://code.google.com/p/scalacl/), which converts a tiny subset of Scala to OpenCL and hence needed to get any runtime dependency of the converted code out of the way. This idea / project is a natural consequence of that first experience.
 
 [Ping me on Twitter](http://twitter.com/ochafik) !
