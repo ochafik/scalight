@@ -46,6 +46,13 @@ Plan is to provide / keep the following features :
 *   For loops... 
 *   Case classes, tuples & their pattern-matching
 
+OMG, it's a slaughter, a heresy !
+=================================
+
+Something similar in the programming space to Frankenstein's experiments... (can Scala's adult brains fit inside a doll's body ?)
+
+Please remember : I'm currently just playing with this idea and I'm looking for positive / negative feedback (I **know** it has many attributes of a bad good idea, plus some of those of a good bad idea).
+
 How would it work ?
 ===================
 
