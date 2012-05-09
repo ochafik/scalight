@@ -1,23 +1,24 @@
 Scalight = Scala language MINUS scala-library
 
-Not much left, but still way above Java !
-
 *This is just at the concept phase right now, there's not even a prototype to try out, but your feedback is welcome (see below)*
+
+In a nutshell
+=============
+
+**If Java is JVM's assembler, Scala is it's C++, and Scalight aims at being its C language.**
+
+The goal of Scalight is to provide a minimalistic subset of the Scala language with virtually no runtime dependency on Scala-the-library (let's say less than 100kB of runtime dependencies as a first goal).
+
+Of course, this means getting a language that's close to Scala by the syntax but closer to raw Java by the power (still a few times more concise than Java, though).
 
 Rationale
 =========
-
-**If Java is JVM's assembler, Scala is it's C++, and Scalight aims at being its C language.**
 
 [Scala](http://www.scala-lang.org) is a great language with countless advantages, and it is rather tightly coupled to its great [runtime library](file://localhost/Users/ochafik/bin/scala-2.10.0.latest-devel-docs/api/index.html).
 
 However, that library has grown big, as in 6-8MB big, and it's unlikely to ever go back below 5 MB.
 
 That's okay for fat desktop or server apps, but not so much for Android or other embedded / real-time situations (where any library that creates lots of objects can be a threat anyway).
-
-The goal of Scalight is to provide a minimalistic subset of the Scala language with virtually no runtime dependency on Scala-the-library (let's say less than 100kB of runtime dependencies as a first goal).
-
-Of course, this means getting a language that's close to Scala by the syntax but closer to raw Java by the power (still a few times more concise than Java, though).
 
 Although my primary goal is to make Scala a better contender on the Android platform, not having to depend on scala-library anymore could unlock some deciders in Java software houses... What do **you** think ? 
 
