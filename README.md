@@ -5,7 +5,7 @@ Scalight = Scala language MINUS scala-library
 In a nutshell
 =============
 
-**If Java is JVM's assembler and Scala is it's C++, then Scalight aims at becoming its embedded C language.**
+**If Java is the JVM's assembler and Scala is it's C++, then Scalight aims at becoming its embedded C language.**
 
 The goal of Scalight is to provide a minimalistic subset of the Scala language with virtually no runtime dependency on Scala-the-library (let's say less than 100kB of runtime dependencies as a first goal).
 
