@@ -1,0 +1,13 @@
+diff --git a/src/compiler/scala/reflect/internal/Definitions.scala b/src/compiler/scala/reflect/internal/Definitions.scala
+index 0612dcd..8042bd9 100644
+--- a/src/compiler/scala/reflect/internal/Definitions.scala
++++ b/src/compiler/scala/reflect/internal/Definitions.scala
+@@ -448,7 +448,7 @@ trait Definitions extends reflect.api.StandardDefinitions {
+     // collections classes
+     lazy val ConsClass          = requiredClass[scala.collection.immutable.::[_]]
+     lazy val IterableClass      = requiredClass[scala.collection.Iterable[_]]
+-    lazy val IteratorClass      = requiredClass[scala.collection.Iterator[_]]
++    lazy val IteratorClass      = requiredClass[java.util.Iterator[_]]
+     lazy val ListClass          = requiredClass[scala.collection.immutable.List[_]]
+     lazy val SeqClass           = requiredClass[scala.collection.Seq[_]]
+     lazy val StringBuilderClass = requiredClass[scala.collection.mutable.StringBuilder]

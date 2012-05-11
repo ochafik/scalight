@@ -1,15 +1,10 @@
-This is a trimmed-down version of the Scala library (see LICENSE for copyright information).
+Differences :
 
-As a first step, it's probably better not to get rid of Product, Tuples & Functions.
+*   Product.productIterator is java.util.Iterator[Any] instead of scala.collection.Iterator[Any]
+*   No @specialized annotations
 
-Source taken from Scala 2.10.0-SNAPSHOT roughly as of the 1st May 2012, with the following changes :
-*   Commented @specialized annotations
-*   Renamed scala package to scalaLight (see TODO below)
-*   Changed scala.Product.productIterator to return Array[Any]
+To build the modified scala-library :
 
-TODO
-====
+	./build-scala-library
+	
 
-Using a tool such as maven-shade-plugin, relocate / rename the following :
-*   scalaLight package to scala
-*   Product.productIterator2 to Product.productIterator

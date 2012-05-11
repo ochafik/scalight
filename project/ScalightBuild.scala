@@ -38,6 +38,7 @@ object ScalightBuild extends Build
     },
     pomIncludeRepository := { _ => false }
   )
+  
   lazy val scalaSettings = Seq(
     //scalaVersion := "2.10.0-SNAPSHOT",
     scalaVersion := "2.10.0-M3",
@@ -54,11 +55,33 @@ object ScalightBuild extends Build
     //libraryDependencies += "org.scala-tools.testing" %% "scalacheck" % "1.9" % "test"
   )
   
+  
+  val generateRuntime = TaskKey[Unit]("generate-runtime", "Trims down scala-library.jar into scalight-library.jar")
+
+  val generateRuntimeTask = generateRuntime := {
+    import sys.process._
+    
+    Seq(
+      "java", "-jar", "RuntimeLibrary/proguard.jar",
+      "-libraryjars",
+      if (System.getProperty("os.name").contains("Mac OS"))
+         "/System/Library/Frameworks/JavaVM.framework/Classes/classes.jar"
+      else
+        "<java.home>/lib/rt.jar",
+      "-injar",  "RuntimeLibrary/scala-library-no-specialization.jar",
+      "-outjar", "RuntimeLibrary/scalight-library.jar",
+      "-printmapping", "RuntimeLibrary/scalight-library.proguard.mapping", 
+      
+      "@RuntimeLibrary/scalight-library.pro"
+    ) !
+  }
+  
   lazy val scalight = 
     Project(id = "scalight", base = file("."), settings = standardSettings ++ Seq(
+      generateRuntimeTask,
       scalacOptions in console in Compile <+= (packageBin in compilerPlugin in Compile) map("-Xplugin:" + _)
     )).
-    dependsOn(staticLibrary, compilets, compilerPlugin, runtimeLibrary).
+    dependsOn(staticLibrary, compilets, compilerPlugin).
     aggregate(staticLibrary, compilets, compilerPlugin)
   
   lazy val compilerPlugin = 
@@ -67,11 +90,12 @@ object ScalightBuild extends Build
     )).
     dependsOn(staticLibrary, compilets)
 
+  /*
   lazy val runtimeLibrary = 
     Project(id = "scalight-runtime-library", base = file("RuntimeLibrary"), settings = standardSettings ++ Seq(
       scalacOptions ++= Seq("-bootclasspath", "RuntimeLibrary")
-    ))
-                 
+    ))// ++ proguard)
+  */        
   lazy val staticLibrary = 
     Project(id = "scalight-static-library", base = file("StaticLibrary"), settings = standardSettings)
                  
@@ -80,4 +104,18 @@ object ScalightBuild extends Build
       libraryDependencies += "com.nativelibs4java" %% "scalaxy-macros" % "0.3-SNAPSHOT"
     )).
     dependsOn(staticLibrary)
+  
+  /*
+  lazy val trimmer =
+    Project(id = "scalight-trimmer", base = file("Trimmer"), settings = standardSettings ++ Seq(
+      libraryDependencies += "org.ow2.asm" % "asm" % "4.0"
+    ))
+  */  
+  
+  /*
+  import ProguardPlugin._
+  lazy val proguard = proguardSettings ++ Seq(
+    proguardOptions := Seq("-dontoptimize -dontobfuscate")
+  )
+  */
 }
