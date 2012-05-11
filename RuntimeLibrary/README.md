@@ -5,6 +5,6 @@ Differences :
 
 To build the modified scala-library :
 
-	./build-scala-library
+	./build-scala-library.sh
 	
 
