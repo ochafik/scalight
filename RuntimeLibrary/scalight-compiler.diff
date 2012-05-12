@@ -1,8 +1,8 @@
 diff --git a/src/compiler/scala/reflect/internal/Definitions.scala b/src/compiler/scala/reflect/internal/Definitions.scala
-index 0612dcd..8042bd9 100644
+index 0612dcd..d5a02e2 100644
 --- a/src/compiler/scala/reflect/internal/Definitions.scala
 +++ b/src/compiler/scala/reflect/internal/Definitions.scala
-@@ -448,7 +448,7 @@ trait Definitions extends reflect.api.StandardDefinitions {
+@@ -448,10 +448,10 @@ trait Definitions extends reflect.api.StandardDefinitions {
      // collections classes
      lazy val ConsClass          = requiredClass[scala.collection.immutable.::[_]]
      lazy val IterableClass      = requiredClass[scala.collection.Iterable[_]]
@@ -10,7 +10,11 @@ index 0612dcd..8042bd9 100644
 +    lazy val IteratorClass      = requiredClass[java.util.Iterator[_]]
      lazy val ListClass          = requiredClass[scala.collection.immutable.List[_]]
      lazy val SeqClass           = requiredClass[scala.collection.Seq[_]]
-     lazy val StringBuilderClass = requiredClass[scala.collection.mutable.StringBuilder]
+-    lazy val StringBuilderClass = requiredClass[scala.collection.mutable.StringBuilder]
++    lazy val StringBuilderClass = requiredClass[java.lang.StringBuilder]
+     lazy val TraversableClass   = requiredClass[scala.collection.Traversable[_]]
+ 
+     lazy val ListModule       = requiredModule[scala.collection.immutable.List.type]
 diff --git a/src/compiler/scala/reflect/internal/TreePrinters.scala b/src/compiler/scala/reflect/internal/TreePrinters.scala
 index b3e4318..b0d2d5f 100644
 --- a/src/compiler/scala/reflect/internal/TreePrinters.scala
@@ -36,12 +40,15 @@ index 54efef8..660139e 100644
  trait TypeDebugging {
    self: SymbolTable =>
 diff --git a/src/compiler/scala/reflect/internal/Types.scala b/src/compiler/scala/reflect/internal/Types.scala
-index 81582db..6eee2b2 100644
+index 81582db..b1778f7 100644
 --- a/src/compiler/scala/reflect/internal/Types.scala
 +++ b/src/compiler/scala/reflect/internal/Types.scala
-@@ -6753,7 +6753,7 @@ trait Types extends api.Types { self: SymbolTable =>
+@@ -6751,9 +6751,9 @@ trait Types extends api.Types { self: SymbolTable =>
+     "scala.collection.Seq",
+     "scala.collection.Traversable",
      "scala.collection.Iterable",
-     "scala.collection.mutable.StringBuilder",
+-    "scala.collection.mutable.StringBuilder",
++    "java.lang.StringBuilder",
      "scala.collection.IndexedSeq",
 -    "scala.collection.Iterator")
 +    "java.util.Iterator")
@@ -71,18 +78,6 @@ index 93ef4647..dbcfd39 100644
  trait Calculate {
    self: Reifier =>
 diff --git a/src/compiler/scala/tools/nsc/CompilerCommand.scala b/src/compiler/scala/tools/nsc/CompilerCommand.scala
-index 4c8a270..42a77b8 100644
---- a/src/compiler/scala/tools/nsc/CompilerCommand.scala
-+++ b/src/compiler/scala/tools/nsc/CompilerCommand.scala
-@@ -123,7 +123,7 @@ class CompilerCommand(arguments: List[String], val settings: Settings) {
- 
-   def processArguments: (Boolean, List[String]) = {
-     // expand out @filename to the contents of that filename
--    val expandedArguments = arguments flatMap {
-+    val expandedArguments = ("-no-specialization" :: arguments) flatMap {
-       case x if x startsWith "@"  => expandArg(x)
-       case x                      => List(x)
-     }
 diff --git a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala b/src/compiler/scala/tools/nsc/ast/NodePrinters.scala
 index 5d849b9..db0e185 100644
 --- a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala

@@ -38,23 +38,23 @@ fi
 
 SCALA_SCALIGHT_HOME=`pwd`
 
-echo "Build scala"
-ant || fail "Failed to build scala"
+echo "Compiler 'locker' lib"
+ant locker.lib || fail "Failed to build scala"
 
 echo "Applying first patch"
 git apply ../scalight-compiler.diff || fail "Failed to apply first patch"
 
-echo "Deleting the 'locker' compiler"
+echo "Deleting the 'locker' compiler, if it exists"
 rm -fR build/locker/all.complete build/locker/compiler.complete build/locker/classes/compiler
 
-echo "Recompiling the 'locker' compiler"
-ant || fail "Failed to recompile the 'locker' compiler"
+echo "Compiling the 'locker' compiler"
+ant locker.comp || fail "Failed to recompile the 'locker' compiler"
 	
 echo "Applying second patch"
 git apply ../scalight-library.diff || fail "Failed to apply the second patch"
 
-#echo "Removing @specialized annotations"
-#find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?//g' '{}' ';'
+echo "Removing @specialized annotations"
+find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?//g' '{}' ';'
 	
 echo "Recompiling 'quick'"	
 ant quick.clean build || fail "Failed to recompile 'quick'"

@@ -1,7 +1,7 @@
 rm -fR target
 mkdir target
 #2> /dev/null
-scala-scalight/build/pack/bin/scalac -d target Test.scala 
+scala-scalight1/build/pack/bin/scalac -d target Test.scala 
 
 for L in \
 	scala-patched-library.jar \
