@@ -3,8 +3,12 @@ Differences :
 *   Product.productIterator is java.util.Iterator[Any] instead of scala.collection.Iterator[Any]
 *   No @specialized annotations
 
-To build the modified scala-library :
+To build the patched scala-library :
 
-	./build-scala-library.sh
+	./build-scala-patched-library.sh
 	
+Then in sbt, use proguard to trim scala-patched-library.jar :
 
+	generate-runtime
+	
+	
