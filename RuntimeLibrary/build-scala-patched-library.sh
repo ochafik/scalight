@@ -53,3 +53,15 @@ echo "Recompiling 'quick'"
 ant quick.clean build || exit 1
 
 cp -f build/pack/lib/scala-library.jar ../scala-patched-library.jar || exit 1
+
+cd ..
+
+if [[ -d /System ]] ; then
+	JAVA_CLASSES_JAR=/System/Library/Frameworks/JavaVM.framework/Classes/classes.jar
+else
+	JAVA_CLASSES_JAR="<java.home>/lib/rt.jar"
+fi
+
+java -jar proguard.jar -libraryjars "$JAVA_CLASSES_JAR" -injar  scala-patched-library.jar -outjar scalight-library.jar -printmapping scalight-library.proguard.mapping @scalight-library.pro || exit 1
+
+ls -l scalight-library.jar

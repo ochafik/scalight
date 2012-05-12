@@ -55,30 +55,8 @@ object ScalightBuild extends Build
     //libraryDependencies += "org.scala-tools.testing" %% "scalacheck" % "1.9" % "test"
   )
   
-  
-  val generateRuntime = TaskKey[Unit]("generate-runtime", "Trims down scala-library.jar into scalight-library.jar")
-
-  val generateRuntimeTask = generateRuntime := {
-    import sys.process._
-    
-    Seq(
-      "java", "-jar", "RuntimeLibrary/proguard.jar",
-      "-libraryjars",
-      if (System.getProperty("os.name").contains("Mac OS"))
-         "/System/Library/Frameworks/JavaVM.framework/Classes/classes.jar"
-      else
-        "<java.home>/lib/rt.jar",
-      "-injar",  "RuntimeLibrary/scala-patched-library.jar",
-      "-outjar", "RuntimeLibrary/scalight-library.jar",
-      "-printmapping", "RuntimeLibrary/scalight-library.proguard.mapping", 
-      
-      "@RuntimeLibrary/scalight-library.pro"
-    ) !
-  }
-  
   lazy val scalight = 
     Project(id = "scalight", base = file("."), settings = standardSettings ++ Seq(
-      generateRuntimeTask,
       scalacOptions in console in Compile <+= (packageBin in compilerPlugin in Compile) map("-Xplugin:" + _)
     )).
     dependsOn(staticLibrary, compilets, compilerPlugin).
