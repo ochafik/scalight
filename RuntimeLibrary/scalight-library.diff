@@ -1,8 +1,8 @@
 diff --git a/src/library/scala/Product.scala b/src/library/scala/Product.scala
-index 1459ab9..33d3e02 100644
+index 1459ab9..03d7710 100644
 --- a/src/library/scala/Product.scala
 +++ b/src/library/scala/Product.scala
-@@ -35,7 +35,7 @@ trait Product extends Any with Equals {
+@@ -35,11 +35,12 @@ trait Product extends Any with Equals {
    /** An iterator over all the elements of this product.
     *  @return     in the default implementation, an `Iterator[Any]`
     */
@@ -11,6 +11,11 @@ index 1459ab9..33d3e02 100644
      private var c: Int = 0
      private val cmax = productArity
      def hasNext = c < cmax
+     def next() = { val result = productElement(c); c += 1; result }
++    def remove = ???
+   }
+ 
+   /** A string used in the `toString` methods of derived classes.
 diff --git a/src/library/scala/reflect/api/Trees.scala b/src/library/scala/reflect/api/Trees.scala
 index ca4e60f..9757d46 100644
 --- a/src/library/scala/reflect/api/Trees.scala
@@ -24,7 +29,7 @@ index ca4e60f..9757d46 100644
  // Syncnote: Trees are currently not thread-safe.
  trait Trees { self: Universe =>
 diff --git a/src/library/scala/runtime/ScalaRunTime.scala b/src/library/scala/runtime/ScalaRunTime.scala
-index 4c5e0e4..a0e7473 100644
+index 4c5e0e4..65a75e3 100644
 --- a/src/library/scala/runtime/ScalaRunTime.scala
 +++ b/src/library/scala/runtime/ScalaRunTime.scala
 @@ -196,14 +196,24 @@ object ScalaRunTime {
@@ -56,7 +61,15 @@ index 4c5e0e4..a0e7473 100644
        private var c: Int = 0
        private val cmax = x.productArity
        def hasNext = c < cmax
-@@ -225,7 +235,7 @@ object ScalaRunTime {
+@@ -212,6 +222,7 @@ object ScalaRunTime {
+         c += 1
+         result.asInstanceOf[T]
+       }
++      def remove = ???
+     }
+   }
+ 
+@@ -225,7 +236,7 @@ object ScalaRunTime {
      else x.equals(y)
  
    def _equals(x: Product, y: Any): Boolean = y match {
@@ -65,7 +78,7 @@ index 4c5e0e4..a0e7473 100644
      case _                                              => false
    }
  
-@@ -280,6 +290,20 @@ object ScalaRunTime {
+@@ -280,6 +291,21 @@ object ScalaRunTime {
     *  See ticket #2867 for specifics.
     */
    def sameElements(xs1: collection.Seq[Any], xs2: collection.Seq[Any]) = xs1 sameElements xs2
@@ -74,6 +87,7 @@ index 4c5e0e4..a0e7473 100644
 +    new java.util.Iterator[Any] {
 +      def hasNext = xs.hasNext
 +      def next = f(xs.next)
++      def remove = ???
 +    }
 +  }
 +  def sameElements(xs1: java.util.Iterator[Any], xs2: java.util.Iterator[Any]): Boolean = { 
@@ -86,7 +100,7 @@ index 4c5e0e4..a0e7473 100644
  
    /** Given any Scala value, convert it to a String.
     *
-@@ -350,7 +374,7 @@ object ScalaRunTime {
+@@ -350,7 +376,7 @@ object ScalaRunTime {
        case x: Iterable[_]               => x.iterator take maxElements map inner mkString (x.stringPrefix + "(", ", ", ")")
        case x: Traversable[_]            => x take maxElements map inner mkString (x.stringPrefix + "(", ", ", ")")
        case x: Product1[_] if isTuple(x) => "(" + inner(x._1) + ",)" // that special trailing comma
