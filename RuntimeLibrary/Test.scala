@@ -6,7 +6,14 @@ object Test {
     
     //*
     case class T(a: Int, b: Int)
-    println(T(1, 2))
+    val t = T(1, 2)
+    
+    println(t)
+    
+    t match {
+      case T(a, b) =>
+        println("a = " + a + ", b = " + b)
+    }
     //*/
   }
 }

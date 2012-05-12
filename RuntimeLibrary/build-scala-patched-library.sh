@@ -1,14 +1,21 @@
 #!/bin/bash
 
+function fail() {
+	echo "#"	
+	echo "# ERROR: $@"	
+	echo "#"
+	exit 1
+}
+
 if [[ -d scala-scalight ]] ; then
 	cd scala-scalight || exit 1
 	
 	echo "Resetting sources"
-	git checkout src || exit 1
+	git checkout src || fail "Failed to revert sources in `pwd`"
 	
 	echo "Deleting previous builds"
 	pwd
-	ant all.clean || exit 1
+	ant all.clean || fail "Failed to clean"
 	
 else
 	echo "Cloning scala"
@@ -16,7 +23,7 @@ else
 	
 	cd scala-scalight || exit 1
 	
-	dos2unix *.sh tools/*.sh || exit 1
+	dos2unix *.sh tools/*.sh || fail "Failed to fix script line endings"
 	
 	if [[ -d /System ]] ; then 
 		echo "Fixing mac build"
@@ -26,39 +33,39 @@ else
 		sed -i.bak -E 's/\$\{sha1% \?\$jar_name\}/\$\(echo \$sha1 \| sed '"'s\/ \\\?.*\/\/'\)/" tools/binary-repo-lib.sh
 	fi
 	
-	./pull-binary-libs.sh || exit 1
+	./pull-binary-libs.sh || fail "Failed to pull binary libs"
 fi
 
 SCALA_SCALIGHT_HOME=`pwd`
 
 echo "Build scala"
-ant || exit 1
+ant || fail "Failed to build scala"
 
 echo "Applying first patch"
-git apply ../scalight-compiler.diff || exit 1
+git apply ../scalight-compiler.diff || fail "Failed to apply first patch"
 
 echo "Deleting the 'locker' compiler"
 rm -fR build/locker/all.complete build/locker/compiler.complete build/locker/classes/compiler
 
 echo "Recompiling the 'locker' compiler"
-ant || exit 1
+ant || fail "Failed to recompile the 'locker' compiler"
 	
 echo "Applying second patch"
-git apply ../scalight-library.diff || exit 1
+git apply ../scalight-library.diff || fail "Failed to apply the second patch"
 
 #echo "Removing @specialized annotations"
 #find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?//g' '{}' ';'
 	
 echo "Recompiling 'quick'"	
-ant quick.clean build || exit 1
+ant quick.clean build || fail "Failed to recompile 'quick'"
 
 echo "Converting line endings of scripts"	
 for B in scala scalac scalap scaladoc ; do
-	dos2unix build/pack/bin/$B || exit 1
+	dos2unix build/pack/bin/$B || fail "Failed to fix bin scripts line endings"
 done
 
 echo "Copying scala-patched-library.jar"
-cp -f build/pack/lib/scala-library.jar ../../scala-patched-library.jar || exit 1
+cp -f build/pack/lib/scala-library.jar ../../scala-patched-library.jar || fail "Failed to copy jar"
 
 cd ..
 
