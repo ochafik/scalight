@@ -6,6 +6,7 @@ Differences with scala-library.jar :
 
 To build the patched scala-library :
 
+	cd RuntimeLibrary
 	./build-scala-patched-library.sh
 	
 That script will checkout scala from master, will apply minor patches (about productIterator & -no-specialize) in 2 steps (one to build the locker compiler, a second time to build the quick library with the freshly built compiler).
@@ -15,3 +16,15 @@ Then, the resulting scala-library.jar is copied as scala-patched-library.jar, an
 *   PartialFunction
 *   Option
 *   Either, Left, Right
+
+The resulting scalight-library-proguarded.jar is then trimmed by the Trimmer sub-project and scalight-library-proguarded-trimmed.jar is created.
+To launch the trimmer continuously, open a separate terminal and type :
+
+	sbt -sbt-snapshot
+	project scalight-trimmer
+	~run
+	
+One can test stuff with :
+
+	cd RuntimeLibrary
+	./test.sh
