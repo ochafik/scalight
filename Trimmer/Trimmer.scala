@@ -18,9 +18,10 @@ object Trimmer extends App {
     case Array(j, d) => (j, d)
     case _ =>
       (
-        getProperty("user.home") +
-        "RuntimeLibrary/scala-patched-library.jar",
-        "scalight-trimmed-library.jar"
+        //getProperty("user.home") +
+        //"RuntimeLibrary/scala-patched-library.jar",
+        "RuntimeLibrary/scalight-library-proguarded.jar",
+        "RuntimeLibrary/scalight-library-proguarded-trimmed.jar"
       )
   }
 
@@ -71,29 +72,38 @@ object Trimmer extends App {
   }
   
   object Roots {
+    /*
     val rootClasses = Set[String](
       "scala/Option",
       "scala/Either",
-      "scala/PartialFunction"
+      "scala/Left",
+      "scala/Right",
+      "scala/PartialFunction",
+      "scala/runtime/VolatileObjectRef"
     )
     val rootPatterns = Set[String](
       "scala/Tuple\\d*",
       "scala/Function\\d*"
     )//.map(_.r)
-  
+    */
+    val rootClasses = Set[String]()
+    val rootPatterns = Set[String](
+      "scala/[^/]+",
+      "scala/runtime/.*"
+    )
     def isRoot(n: String) =
       rootClasses.contains(n) ||
       rootPatterns.exists(n.matches(_))
   }
   
-  val depsFile = new PrintWriter("deps.out")
+  def breakDepsAt =  "scala/(collection|util|sys|reflect|math|xml)/.*"
   
   def resolveDeps(n: String, out: java.util.Set[String]): Unit = {
-    if (out.add(n)) {
-      depsFile.println("DEPENDENCIES FOR " + n + ": ")
-      for (od <- deps.get(n); d <- od) {
-        depsFile.println("\t" + d)
-        resolveDeps(d, out)
+    if (!n.matches(breakDepsAt)) {
+      if (out.add(n)) {
+        for (od <- deps.get(n); d <- od) {
+          resolveDeps(d, out)
+        }
       }
     }
   }
@@ -104,12 +114,30 @@ object Trimmer extends App {
     out.toSet
   }
   
+  def printDeps(deps: Map[String, Set[String]], outFile: File) = {
+    val out = new PrintWriter(outFile)
+    for ((n, dd) <- deps) {
+      out.println("DEPENDENCIES FOR " + n + ": ")
+      for (d <- dd)
+        out.println("\t" + d)
+    }
+    out.close
+    println("Wrote '" + outFile + "'")
+  }
+  
+  
   println("Processing " + jar)
   val deps = analyzeJarDependencies(new File(jar))
+  
+  printDeps(deps, new File("Trimmer/deps.out"))
+  
   val roots = deps.keys.filter(Roots.isRoot(_)).toSet
   val resolved: Set[String] = resolveDeps(roots)
   
-  depsFile.close
+  printDeps(deps.collect({ 
+    case (n, dd) if resolved.contains(n) =>
+      (n, dd.filter(resolved.contains(_)))
+  }), new File("Trimmer/resolvedDeps.out"))
   
   val retained = resolved.filter(d => deps.keys.contains(d))
   

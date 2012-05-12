@@ -35,6 +35,19 @@ index 54efef8..660139e 100644
  
  trait TypeDebugging {
    self: SymbolTable =>
+diff --git a/src/compiler/scala/reflect/internal/Types.scala b/src/compiler/scala/reflect/internal/Types.scala
+index 09e7303..54714bb 100644
+--- a/src/compiler/scala/reflect/internal/Types.scala
++++ b/src/compiler/scala/reflect/internal/Types.scala
+@@ -6749,7 +6749,7 @@ trait Types extends api.Types { self: SymbolTable =>
+     "scala.collection.Iterable",
+     "scala.collection.mutable.StringBuilder",
+     "scala.collection.IndexedSeq",
+-    "scala.collection.Iterator")
++    "java.util.Iterator")
+ 
+ 
+   /** The maximum number of recursions allowed in toString
 diff --git a/src/compiler/scala/reflect/reify/codegen/Util.scala b/src/compiler/scala/reflect/reify/codegen/Util.scala
 index bb369a1..c7232a8 100644
 --- a/src/compiler/scala/reflect/reify/codegen/Util.scala
@@ -57,6 +70,24 @@ index 93ef4647..dbcfd39 100644
  
  trait Calculate {
    self: Reifier =>
+diff --git a/src/compiler/scala/tools/nsc/CompilerCommand.scala b/src/compiler/scala/tools/nsc/CompilerCommand.scala
+index 4c8a270..ee42191 100644
+--- a/src/compiler/scala/tools/nsc/CompilerCommand.scala
++++ b/src/compiler/scala/tools/nsc/CompilerCommand.scala
+@@ -9,10 +9,12 @@ import scala.collection.mutable.ListBuffer
+ import io.File
+ 
+ /** A class representing command line info for scalac */
+-class CompilerCommand(arguments: List[String], val settings: Settings) {
++class CompilerCommand(arguments0: List[String], val settings: Settings) {
+   def this(arguments: List[String], error: String => Unit) = this(arguments, new Settings(error))
+   def this(arguments: List[String], settings: Settings, error: String => Unit) = this(arguments, settings withErrorFn error)
+ 
++  val arguments = "-no-specialization" :: arguments0
++  
+   type Setting = Settings#Setting
+ 
+   /** file extensions of files that the compiler can process */
 diff --git a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala b/src/compiler/scala/tools/nsc/ast/NodePrinters.scala
 index 5d849b9..db0e185 100644
 --- a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala

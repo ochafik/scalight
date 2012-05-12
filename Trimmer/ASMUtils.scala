@@ -35,6 +35,8 @@ object ASMUtils {
     
     val r = new ClassReader(b)
     val n = r.getClassName
+    s += r.getSuperName
+    
     r.accept(
       new ClassVisitor(0) {
         def add(t: Type) = {

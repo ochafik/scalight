@@ -46,8 +46,8 @@ ant || exit 1
 echo "Applying second patch"
 git apply ../scalight-library.diff || exit 1
 
-echo "Removing @specialized annotations"
-find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?//g' '{}' ';'
+#echo "Removing @specialized annotations"
+#find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?//g' '{}' ';'
 	
 echo "Recompiling 'quick'"	
 ant quick.clean build || exit 1
@@ -68,6 +68,6 @@ else
 	JAVA_CLASSES_JAR="<java.home>/lib/rt.jar"
 fi
 
-java -jar proguard.jar -libraryjars "$JAVA_CLASSES_JAR" -injar  scala-patched-library.jar -outjar scalight-library.jar -printmapping scalight-library.proguard.mapping @scalight-library.pro || exit 1
+java -jar proguard.jar -libraryjars "$JAVA_CLASSES_JAR" -injar  scala-patched-library.jar -outjar scalight-library-proguarded.jar -printmapping scalight-library-proguarded.mapping @scalight-library.pro || exit 1
 
-ls -l scalight-library.jar
+ls -l scalight-library*.jar

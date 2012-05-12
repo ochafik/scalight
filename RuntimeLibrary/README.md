@@ -8,8 +8,10 @@ To build the patched scala-library :
 
 	./build-scala-patched-library.sh
 	
-Then in sbt, use proguard to trim scala-patched-library.jar :
+That script will checkout scala from master, will apply minor patches (about productIterator & -no-specialize) in 2 steps (one to build the locker compiler, a second time to build the quick library with the freshly built compiler).
 
-	generate-runtime
-	
-	
+Then, the resulting scala-library.jar is copied as scala-patched-library.jar, and processed by proguard with an extensive list of things we want to keep :
+*   Function, Products and Tuples of any arity
+*   PartialFunction
+*   Option
+*   Either, Left, Right
