@@ -47,7 +47,7 @@ echo "Applying second patch"
 git apply ../scalight-library.diff || exit 1
 
 echo "Removing @specialized annotations"
-find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized\(.*\)//' '{}' ';'
+find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?//g' '{}' ';'
 	
 echo "Recompiling 'quick'"	
 ant quick.clean build || exit 1
