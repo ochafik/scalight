@@ -51,3 +51,5 @@ find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?
 	
 echo "Recompiling 'quick'"	
 ant quick.clean build || exit 1
+
+cp -f build/pack/lib/scala-library.jar ../scala-patched-library.jar || exit 1

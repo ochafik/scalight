@@ -68,7 +68,7 @@ object ScalightBuild extends Build
          "/System/Library/Frameworks/JavaVM.framework/Classes/classes.jar"
       else
         "<java.home>/lib/rt.jar",
-      "-injar",  "RuntimeLibrary/scala-library-no-specialization.jar",
+      "-injar",  "RuntimeLibrary/scala-patched-library.jar",
       "-outjar", "RuntimeLibrary/scalight-library.jar",
       "-printmapping", "RuntimeLibrary/scalight-library.proguard.mapping", 
       
