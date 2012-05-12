@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ ! -d checkouts ]] ; then
+	mkdir checkouts
+fi
+
+cd checkouts
+
 if [[ -d scala-scalight ]] ; then
 	cd scala-scalight || exit 1
 	
@@ -58,16 +64,8 @@ for B in scala scalac scalap scaladoc ; do
 done
 
 echo "Copying scala-patched-library.jar"
-cp -f build/pack/lib/scala-library.jar ../scala-patched-library.jar || exit 1
+cp -f build/pack/lib/scala-library.jar ../../scala-patched-library.jar || exit 1
 
-cd ..
+cd ../..
 
-if [[ -d /System ]] ; then
-	JAVA_CLASSES_JAR=/System/Library/Frameworks/JavaVM.framework/Classes/classes.jar
-else
-	JAVA_CLASSES_JAR="<java.home>/lib/rt.jar"
-fi
-
-java -jar proguard.jar -libraryjars "$JAVA_CLASSES_JAR" -injar  scala-patched-library.jar -outjar scalight-library-proguarded.jar -printmapping scalight-library-proguarded.mapping @scalight-library.pro || exit 1
-
-ls -l scalight-library*.jar
+./proguard-scala-patched-library.sh
