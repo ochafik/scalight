@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ ! -d checkouts ]] ; then
-	mkdir checkouts
-fi
-
-cd checkouts
-
 if [[ -d scala-scalight ]] ; then
 	cd scala-scalight || exit 1
 	
@@ -17,8 +11,8 @@ if [[ -d scala-scalight ]] ; then
 	ant all.clean || exit 1
 	
 else
-	echo "Checking out scala"
-	git checkout https://github.com/scala/scala.git scala-scalight
+	echo "Cloning scala"
+	git clone https://github.com/scala/scala.git scala-scalight
 	
 	cd scala-scalight || exit 1
 	
@@ -66,6 +60,6 @@ done
 echo "Copying scala-patched-library.jar"
 cp -f build/pack/lib/scala-library.jar ../../scala-patched-library.jar || exit 1
 
-cd ../..
+cd ..
 
 ./proguard-scala-patched-library.sh
