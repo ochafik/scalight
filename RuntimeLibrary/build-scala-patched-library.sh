@@ -52,6 +52,12 @@ find src/library -name '*.scala' -exec sed -i.bak -E 's/@specialized(\([^)]+\))?
 echo "Recompiling 'quick'"	
 ant quick.clean build || exit 1
 
+echo "Converting line endings of scripts"	
+for B in scala scalac scalap scaladoc ; do
+	dos2unix build/pack/bin/$B || exit 1
+done
+
+echo "Copying scala-patched-library.jar"
 cp -f build/pack/lib/scala-library.jar ../scala-patched-library.jar || exit 1
 
 cd ..

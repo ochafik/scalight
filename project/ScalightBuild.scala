@@ -59,8 +59,8 @@ object ScalightBuild extends Build
     Project(id = "scalight", base = file("."), settings = standardSettings ++ Seq(
       scalacOptions in console in Compile <+= (packageBin in compilerPlugin in Compile) map("-Xplugin:" + _)
     )).
-    dependsOn(staticLibrary, compilets, compilerPlugin).
-    aggregate(staticLibrary, compilets, compilerPlugin)
+    dependsOn(staticLibrary, compilets, compilerPlugin, trimmer).
+    aggregate(staticLibrary, compilets, compilerPlugin, trimmer)
   
   lazy val compilerPlugin = 
     Project(id = "scalight-compiler-plugin", base = file("CompilerPlugin"), settings = standardSettings ++ Seq(
@@ -83,12 +83,10 @@ object ScalightBuild extends Build
     )).
     dependsOn(staticLibrary)
   
-  /*
   lazy val trimmer =
     Project(id = "scalight-trimmer", base = file("Trimmer"), settings = standardSettings ++ Seq(
       libraryDependencies += "org.ow2.asm" % "asm" % "4.0"
     ))
-  */  
   
   /*
   import ProguardPlugin._

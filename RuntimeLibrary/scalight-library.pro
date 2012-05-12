@@ -6,18 +6,28 @@
     ** MODULE$;
 }
 
--keep class scala.Product*
--keep class scala.Tuple*
--keep class scala.Function*
--keep class scala.PartialFunction*
--keep class scala.Option*
--keep class scala.Some*
--keep class scala.None*
--keep class scala.Either*
--keep class scala.Predef*
--keep class scala.runtime.BoxesRunTime
+-keep class scala.Serializable { *; }
+-keep class scala.Product* { *; }
+-keep class scala.Tuple* { *; }
+-keep class scala.Function* { *; }
+-keep class scala.PartialFunction* { *; }
+-keep class scala.runtime.AbstractFunction* { *; }
+-keep class scala.Option* { *; }
+-keep class scala.Some* { *; }
+-keep class scala.None* { *; }
+-keep class scala.Either* { *; }
+-keep class scala.Predef* { 
+	public <methods>; 
+}
+-keep class scala.runtime.BoxesRunTime* { 
+	public <methods>; 
+}
+-keep class scala.runtime.ScalaRunTime* { 
+	public <methods>; 
+}
+-keep class scala.runtime.VolatileObjectRef* { *; }
 
 -optimizationpasses 3
 -overloadaggressively
--repackageclasses ''
+-repackageclasses 'scala.private'
 -allowaccessmodification
