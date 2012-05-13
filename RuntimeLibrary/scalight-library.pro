@@ -12,7 +12,25 @@
 	
     ** MODULE$;
 }
-
+-keep class scala.MatchError
+-keep class scala.util.control.Breaks$
+-keep class scala.util.control.Breaks {
+	*** breakable(...);
+	*** tryBreakable(...);
+	*** break();
+}
+-keep class scala.util.control.Exception$ {
+	public <methods>;
+}
+-keep class scala.util.control.ControlThrowable
+-keep class scala.Unit$ {
+	*** box(...);
+	*** unbox(...);
+}
+-keep class scala.runtime.BoxedUnit {
+	*** UNIT;
+	*** TYPE;
+}
 -keep class scala.runtime.VolatileObjectRef {
 	*** elem(...);
 }
@@ -124,20 +142,20 @@
 -keep class scala.Predef$ { 
 	*** print(...);
 	*** println(...);
-	*** printf(...);
-	*** readLine(...);
-	*** readBoolean(...);
-	*** readByte(...);
-	*** readShort(...);
-	*** readChar(...);
-	*** readInt(...);
-	*** readLong(...);
-	*** readFloat(...);
-	*** readDouble(...);
-	*** readf(...);
-	*** readf1(...);
-	*** readf2(...);
-	*** readf3(...);
+	#*** printf(...);
+	#*** readLine(...);
+	#*** readBoolean(...);
+	#*** readByte(...);
+	#*** readShort(...);
+	#*** readChar(...);
+	#*** readInt(...);
+	#*** readLong(...);
+	#*** readFloat(...);
+	#*** readDouble(...);
+	#*** readf(...);
+	#*** readf1(...);
+	#*** readf2(...);
+	#*** readf3(...);
 }
 -keep class scala.runtime.BoxesRunTime { 
 	public <methods>;

@@ -77,7 +77,6 @@ index 93ef4647..dbcfd39 100644
  
  trait Calculate {
    self: Reifier =>
-diff --git a/src/compiler/scala/tools/nsc/CompilerCommand.scala b/src/compiler/scala/tools/nsc/CompilerCommand.scala
 diff --git a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala b/src/compiler/scala/tools/nsc/ast/NodePrinters.scala
 index 5d849b9..db0e185 100644
 --- a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala

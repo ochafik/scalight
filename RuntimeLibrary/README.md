@@ -20,9 +20,7 @@ Then, the resulting scala-library.jar is copied as scala-patched-library.jar, an
 The resulting scalight-library-proguarded.jar is then trimmed by the Trimmer sub-project and scalight-library-proguarded-trimmed.jar is created.
 To launch the trimmer continuously, open a separate terminal and type :
 
-	sbt -sbt-snapshot
-	project scalight-trimmer
-	~run
+	sbt -sbt-snapshot "project scalight-trimmer" ~run
 	
 One can test stuff with :
 
