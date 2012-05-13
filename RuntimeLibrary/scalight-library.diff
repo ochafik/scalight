@@ -136,7 +136,7 @@ index 4c5e0e4..f80e9a9 100644
      case _                                              => false
    }
  
-@@ -280,6 +306,21 @@ object ScalaRunTime {
+@@ -280,7 +306,45 @@ object ScalaRunTime {
     *  See ticket #2867 for specifics.
     */
    def sameElements(xs1: collection.Seq[Any], xs2: collection.Seq[Any]) = xs1 sameElements xs2
@@ -156,35 +156,66 @@ index 4c5e0e4..f80e9a9 100644
 +    !xs1.hasNext && !xs2.hasNext
 +  }
  
++  private def isSubClassOf(c: Class[_], className: String): Boolean = {
++    if (!c.isInterface) {
++      val intfs = c.getInterfaces
++      var i = 0
++      val n = intfs.length
++      while (i < n) {
++        val intf = intfs(i)
++        if (isSubClassOf(intf, className))
++          return true
++        i += 1
++      }
++    }
++    var cc = c
++    do {
++      if (cc.getName.equals(className))
++        return true
++        
++      cc = cc.getSuperclass
++    } while (cc != null)
++    
++    return false
++  }
++  
    /** Given any Scala value, convert it to a String.
     *
-@@ -305,19 +346,19 @@ object ScalaRunTime {
+    * The primary motivation for this method is to provide a means for
+@@ -303,24 +367,24 @@ object ScalaRunTime {
+     def isScalaCompilerClass(x: AnyRef) = packageOf(x) startsWith "scala.tools.nsc."
+ 
      // When doing our own iteration is dangerous
-     def useOwnToString(x: Any) = x match {
+-    def useOwnToString(x: Any) = x match {
++    def useOwnToString(x: Any) = (x.asInstanceOf[AnyRef] ne null) && (x.getClass match {
        // Node extends NodeSeq extends Seq[Node] and MetaData extends Iterable[MetaData]
 -      case _: Node | _: MetaData => true
-+      //case _: Node | _: MetaData => true
++      case c if isSubClassOf(c, "scala.xml.Node") || isSubClassOf(c, "scala.xml.MetaData") => true
        // Range/NumericRange have a custom toString to avoid walking a gazillion elements
 -      case _: Range | _: NumericRange[_] => true
-+      //case _: Range | _: NumericRange[_] => true
++      case c if isSubClassOf(c, "scala.collection.immutable.Range") || isSubClassOf(c, "scala.collection.immutable.NumericRange") => true
        // Sorted collections to the wrong thing (for us) on iteration - ticket #3493
 -      case _: Sorted[_, _]  => true
-+      //case _: Sorted[_, _]  => true
++      case c if isSubClassOf(c, "scala.collection.generic.Sorted")  => true
        // StringBuilder(a, b, c) and similar not so attractive
 -      case _: StringLike[_] => true
-+      //case _: StringLike[_] => true
++      case c if isSubClassOf(c, "scala.collection.immutable.StringLike") => true
        // Don't want to evaluate any elements in a view
 -      case _: TraversableView[_, _] => true
-+      //case _: TraversableView[_, _] => true
++      case c if isSubClassOf(c, "scala.collection.TraversableView") => true
        // Don't want to a) traverse infinity or b) be overly helpful with peoples' custom
        // collections which may have useful toString methods - ticket #3710
        // or c) print AbstractFiles which are somehow also Iterable[AbstractFile]s.
 -      case x: Traversable[_] => !x.hasDefiniteSize || !isScalaClass(x) || isScalaCompilerClass(x)
-+      //case x: Traversable[_] => !x.hasDefiniteSize || !isScalaClass(x) || isScalaCompilerClass(x)
++      case c if isSubClassOf(c, "scala.collection.Traversable") => !x.asInstanceOf[{ def hasDefiniteSize: Boolean }].hasDefiniteSize || !isScalaClass(x.asInstanceOf[AnyRef]) || isScalaCompilerClass(x.asInstanceOf[AnyRef])
        // Otherwise, nothing could possibly go wrong
        case _ => false
-     }
-@@ -333,7 +374,7 @@ object ScalaRunTime {
+-    }
++    })
+ 
+     // A variation on inner for maps so they print -> instead of bare tuples
+     def mapInner(arg: Any): String = arg match {
+@@ -333,7 +397,7 @@ object ScalaRunTime {
        if (x.getClass.getComponentType == classOf[BoxedUnit])
          0 until (array_length(x) min maxElements) map (_ => "()") mkString ("Array(", ", ", ")")
        else
@@ -193,7 +224,7 @@ index 4c5e0e4..f80e9a9 100644
      }
  
      // The recursively applied attempt to prettify Array printing.
-@@ -346,11 +387,11 @@ object ScalaRunTime {
+@@ -346,11 +410,11 @@ object ScalaRunTime {
        case x: String                    => if (x.head.isWhitespace || x.last.isWhitespace) "\"" + x + "\"" else x
        case x if useOwnToString(x)       => x.toString
        case x: AnyRef if isArray(x)      => arrayToString(x)
@@ -209,7 +240,7 @@ index 4c5e0e4..f80e9a9 100644
        case x                            => x.toString
      }
  
-@@ -369,6 +410,7 @@ object ScalaRunTime {
+@@ -369,6 +433,7 @@ object ScalaRunTime {
  
      nl + s + "\n"
    }
@@ -217,7 +248,7 @@ index 4c5e0e4..f80e9a9 100644
    private[scala] def checkZip(what: String, coll1: TraversableOnce[_], coll2: TraversableOnce[_]) {
      if (sys.props contains "scala.debug.zip") {
        val xs = coll1.toIndexedSeq
-@@ -383,4 +425,5 @@ object ScalaRunTime {
+@@ -383,4 +448,5 @@ object ScalaRunTime {
        }
      }
    }

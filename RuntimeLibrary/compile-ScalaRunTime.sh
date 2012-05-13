@@ -7,5 +7,7 @@ PATH=$SCALA_HOME/bin:$PATH
 
 #scalac -d target $SCALA_SRC/src/library/scala/runtime/ScalaRunTime.scala
 
-scalac -d target ScalaRunTime.scala
+#scalac -d target ScalaRunTime.scala
+
+scalac -d target scala-scalight/src/library/scala/runtime/ScalaRunTime.scala
 
