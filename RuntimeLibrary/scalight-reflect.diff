@@ -1,0 +1,53 @@
+diff --git a/src/reflect/scala/reflect/internal/Definitions.scala b/src/reflect/scala/reflect/internal/Definitions.scala
+index 6e4ca76..3ddd67b 100644
+--- a/src/reflect/scala/reflect/internal/Definitions.scala
++++ b/src/reflect/scala/reflect/internal/Definitions.scala
+@@ -451,10 +451,10 @@ trait Definitions extends api.StandardDefinitions {
+     // collections classes
+     lazy val ConsClass          = requiredClass[scala.collection.immutable.::[_]]
+     lazy val IterableClass      = requiredClass[scala.collection.Iterable[_]]
+-    lazy val IteratorClass      = requiredClass[scala.collection.Iterator[_]]
++    lazy val IteratorClass      = requiredClass[java.util.Iterator[_]]
+     lazy val ListClass          = requiredClass[scala.collection.immutable.List[_]]
+     lazy val SeqClass           = requiredClass[scala.collection.Seq[_]]
+-    lazy val StringBuilderClass = requiredClass[scala.collection.mutable.StringBuilder]
++    lazy val StringBuilderClass = requiredClass[java.lang.StringBuilder]
+     lazy val TraversableClass   = requiredClass[scala.collection.Traversable[_]]
+ 
+     lazy val ListModule       = requiredModule[scala.collection.immutable.List.type]
+diff --git a/src/reflect/scala/reflect/internal/Printers.scala b/src/reflect/scala/reflect/internal/Printers.scala
+index 80d247c..f16bde6 100644
+--- a/src/reflect/scala/reflect/internal/Printers.scala
++++ b/src/reflect/scala/reflect/internal/Printers.scala
+@@ -11,6 +11,7 @@ package internal
+ import java.io.{ OutputStream, PrintWriter, StringWriter, Writer }
+ import Flags._
+ import scala.compat.Platform.EOL
++import scala.collection.JavaConversions._
+ 
+ trait Printers extends api.Printers { self: SymbolTable =>
+ 
+diff --git a/src/reflect/scala/reflect/internal/Trees.scala b/src/reflect/scala/reflect/internal/Trees.scala
+index 754adcb..0d7d65e 100644
+--- a/src/reflect/scala/reflect/internal/Trees.scala
++++ b/src/reflect/scala/reflect/internal/Trees.scala
+@@ -9,6 +9,7 @@ package internal
+ import Flags._
+ import scala.collection.mutable.{ListBuffer, LinkedHashSet}
+ import util.Statistics
++import scala.collection.JavaConversions._
+ 
+ trait Trees extends api.Trees { self: SymbolTable =>
+ 
+diff --git a/src/reflect/scala/reflect/internal/TypeDebugging.scala b/src/reflect/scala/reflect/internal/TypeDebugging.scala
+index 68b4fa6..914f4b0 100644
+--- a/src/reflect/scala/reflect/internal/TypeDebugging.scala
++++ b/src/reflect/scala/reflect/internal/TypeDebugging.scala
+@@ -5,6 +5,7 @@
+ 
+ package scala.reflect
+ package internal
++import scala.collection.JavaConversions._
+ 
+ trait TypeDebugging {
+   self: SymbolTable =>

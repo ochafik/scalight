@@ -1,13 +1,13 @@
 diff --git a/src/library/scala/Product.scala b/src/library/scala/Product.scala
-index 1459ab9..03d7710 100644
+index 2c6838f..29f75cf 100644
 --- a/src/library/scala/Product.scala
 +++ b/src/library/scala/Product.scala
 @@ -35,11 +35,12 @@ trait Product extends Any with Equals {
    /** An iterator over all the elements of this product.
     *  @return     in the default implementation, an `Iterator[Any]`
     */
--  def productIterator: Iterator[Any] = new collection.AbstractIterator[Any] {
-+  def productIterator: java.util.Iterator[Any] = new java.util.Iterator[Any] {
+-  def productIterator: Iterator[Any] = new scala.collection.AbstractIterator[Any] {
++  def productIterator: java.util.Iterator[Any] = new java.util.Iterator[Any] { 
      private var c: Int = 0
      private val cmax = productArity
      def hasNext = c < cmax
@@ -16,45 +16,34 @@ index 1459ab9..03d7710 100644
    }
  
    /** A string used in the `toString` methods of derived classes.
-diff --git a/src/library/scala/reflect/api/Trees.scala b/src/library/scala/reflect/api/Trees.scala
-index ca4e60f..9757d46 100644
---- a/src/library/scala/reflect/api/Trees.scala
-+++ b/src/library/scala/reflect/api/Trees.scala
-@@ -7,6 +7,7 @@ package scala.reflect
- package api
- 
- import scala.collection.mutable.ListBuffer
-+import collection.JavaConversions._
- 
- // Syncnote: Trees are currently not thread-safe.
- trait Trees { self: Universe =>
 diff --git a/src/library/scala/runtime/ScalaRunTime.scala b/src/library/scala/runtime/ScalaRunTime.scala
-index 4c5e0e4..f80e9a9 100644
+index 1d8fe5e..8673158 100644
 --- a/src/library/scala/runtime/ScalaRunTime.scala
 +++ b/src/library/scala/runtime/ScalaRunTime.scala
-@@ -8,12 +8,7 @@
- 
- package scala.runtime
+@@ -9,13 +9,8 @@
+ package scala
+ package runtime
  
 -import scala.collection.{ Seq, IndexedSeq, TraversableView, AbstractIterator }
 -import scala.collection.mutable.WrappedArray
 -import scala.collection.immutable.{ StringLike, NumericRange, List, Stream, Nil, :: }
 -import scala.collection.generic.{ Sorted }
+ import scala.reflect.{ ClassTag, classTag }
  import scala.util.control.ControlThrowable
 -import scala.xml.{ Node, MetaData }
+ import java.lang.{ Class => jClass }
  
  import java.lang.Double.doubleToLongBits
- import java.lang.reflect.{ Modifier, Method => JMethod }
-@@ -31,7 +26,7 @@ object ScalaRunTime {
+@@ -34,7 +29,7 @@ object ScalaRunTime {
      clazz.isArray && (atLevel == 1 || isArrayClass(clazz.getComponentType, atLevel - 1))
  
-   def isValueClass(clazz: Class[_]) = clazz.isPrimitive()
+   def isValueClass(clazz: jClass[_]) = clazz.isPrimitive()
 -  def isTuple(x: Any) = x != null && tupleNames(x.getClass.getName)
 +  def isTuple(x: Any) = x != null && tupleNames.contains(x.getClass.getName)
    def isAnyVal(x: Any) = x match {
      case _: Byte | _: Short | _: Char | _: Int | _: Long | _: Float | _: Double | _: Boolean | _: Unit => true
      case _                                                                                             => false
-@@ -39,12 +34,12 @@ object ScalaRunTime {
+@@ -42,12 +37,12 @@ object ScalaRunTime {
    // Avoiding boxing which messes up the specialized tests.  Don't ask.
    private val tupleNames = {
      var i = 22
@@ -70,15 +59,14 @@ index 4c5e0e4..f80e9a9 100644
    }
  
    /** Return the class object representing an array with element class `clazz`.
-@@ -196,14 +191,44 @@ object ScalaRunTime {
-     }
-   }
+@@ -170,14 +165,48 @@ object ScalaRunTime {
+   def checkInitialized[T <: AnyRef](x: T): T =
+     if (x == null) throw new UninitializedError else x
  
--  def _toString(x: Product): String =
--    x.productIterator.mkString(x.productPrefix + "(", ",", ")")
-+  def mkString(it: java.util.Iterator[_], prefix: String, sep: String, suffix: String): String =
++  private def mkString(it: java.util.Iterator[_], prefix: String, sep: String, suffix: String): String =
 +    mkString(it, prefix, sep, suffix, -1, null)
-+  def mkString(it: java.util.Iterator[_], prefix: String, sep: String, suffix: String, maxElements: Int, f: Any => String): String = {
++    
++  private def mkString(it: java.util.Iterator[_], prefix: String, sep: String, suffix: String, maxElements: Int, f: Any => String): String = {
 +    val b = new StringBuilder(prefix)
 +    var i = 0
 +    while (it.hasNext && (maxElements < 0 || i < maxElements)) {
@@ -90,9 +78,11 @@ index 4c5e0e4..f80e9a9 100644
 +    b.append(suffix)
 +    b.toString
 +  }
-+  def mkString(it: Array[_], prefix: String, sep: String, suffix: String): String =
++  
++  private def mkString(it: Array[_], prefix: String, sep: String, suffix: String): String =
 +    mkString(it, prefix, sep, suffix, -1, null)
-+  def mkString(it: Array[_], prefix: String, sep: String, suffix: String, maxElements: Int, f: Any => String): String = {
++    
++  private def mkString(it: Array[_], prefix: String, sep: String, suffix: String, maxElements: Int, f: Any => String): String = {
 +    val b = new StringBuilder(prefix)
 +    var i = 0
 +    val n = it.length
@@ -106,10 +96,13 @@ index 4c5e0e4..f80e9a9 100644
 +    b.append(suffix)
 +    b.toString
 +  }
-+  def _toString(x: Product): String = 
++  
+   def _toString(x: Product): String =
+-    x.productIterator.mkString(x.productPrefix + "(", ",", ")")
+-
 +    mkString(x.productIterator, x.productPrefix + "(", ",", ")")
- 
-   def _hashCode(x: Product): Int = scala.util.MurmurHash3.productHash(x)
++ 
+   def _hashCode(x: Product): Int = scala.util.hashing.MurmurHash3.productHash(x)
  
    /** A helper for case classes. */
 -  def typedProductIterator[T](x: Product): Iterator[T] = {
@@ -119,7 +112,7 @@ index 4c5e0e4..f80e9a9 100644
        private var c: Int = 0
        private val cmax = x.productArity
        def hasNext = c < cmax
-@@ -212,6 +237,7 @@ object ScalaRunTime {
+@@ -186,6 +215,7 @@ object ScalaRunTime {
          c += 1
          result.asInstanceOf[T]
        }
@@ -127,7 +120,7 @@ index 4c5e0e4..f80e9a9 100644
      }
    }
  
-@@ -225,7 +251,7 @@ object ScalaRunTime {
+@@ -199,7 +229,7 @@ object ScalaRunTime {
      else x.equals(y)
  
    def _equals(x: Product, y: Any): Boolean = y match {
@@ -136,11 +129,10 @@ index 4c5e0e4..f80e9a9 100644
      case _                                              => false
    }
  
-@@ -280,7 +306,45 @@ object ScalaRunTime {
-    *  See ticket #2867 for specifics.
+@@ -255,6 +285,44 @@ object ScalaRunTime {
     */
-   def sameElements(xs1: collection.Seq[Any], xs2: collection.Seq[Any]) = xs1 sameElements xs2
-+  
+   def sameElements(xs1: scala.collection.Seq[Any], xs2: scala.collection.Seq[Any]) = xs1 sameElements xs2
+ 
 +  def map(xs: java.util.Iterator[Any], f: Any => Any): java.util.Iterator[Any] = { 
 +    new java.util.Iterator[Any] {
 +      def hasNext = xs.hasNext
@@ -155,7 +147,7 @@ index 4c5e0e4..f80e9a9 100644
 +
 +    !xs1.hasNext && !xs2.hasNext
 +  }
- 
++
 +  private def isSubClassOf(c: Class[_], className: String): Boolean = {
 +    if (!c.isInterface) {
 +      val intfs = c.getInterfaces
@@ -182,7 +174,7 @@ index 4c5e0e4..f80e9a9 100644
    /** Given any Scala value, convert it to a String.
     *
     * The primary motivation for this method is to provide a means for
-@@ -303,24 +367,24 @@ object ScalaRunTime {
+@@ -277,24 +345,24 @@ object ScalaRunTime {
      def isScalaCompilerClass(x: AnyRef) = packageOf(x) startsWith "scala.tools.nsc."
  
      // When doing our own iteration is dangerous
@@ -215,7 +207,7 @@ index 4c5e0e4..f80e9a9 100644
  
      // A variation on inner for maps so they print -> instead of bare tuples
      def mapInner(arg: Any): String = arg match {
-@@ -333,7 +397,7 @@ object ScalaRunTime {
+@@ -307,7 +375,7 @@ object ScalaRunTime {
        if (x.getClass.getComponentType == classOf[BoxedUnit])
          0 until (array_length(x) min maxElements) map (_ => "()") mkString ("Array(", ", ", ")")
        else
@@ -224,33 +216,34 @@ index 4c5e0e4..f80e9a9 100644
      }
  
      // The recursively applied attempt to prettify Array printing.
-@@ -346,11 +410,11 @@ object ScalaRunTime {
+@@ -320,11 +388,11 @@ object ScalaRunTime {
        case x: String                    => if (x.head.isWhitespace || x.last.isWhitespace) "\"" + x + "\"" else x
        case x if useOwnToString(x)       => x.toString
        case x: AnyRef if isArray(x)      => arrayToString(x)
--      case x: collection.Map[_, _]      => x.iterator take maxElements map mapInner mkString (x.stringPrefix + "(", ", ", ")")
+-      case x: scala.collection.Map[_, _]      => x.iterator take maxElements map mapInner mkString (x.stringPrefix + "(", ", ", ")")
 -      case x: Iterable[_]               => x.iterator take maxElements map inner mkString (x.stringPrefix + "(", ", ", ")")
 -      case x: Traversable[_]            => x take maxElements map inner mkString (x.stringPrefix + "(", ", ", ")")
-+      //case x: collection.Map[_, _]      => x.iterator take maxElements map mapInner mkString (x.stringPrefix + "(", ", ", ")")
-+      case x: java.lang.Iterable[_]               => mkString(x.iterator, x.getClass.getSimpleName/*stringPrefix*/ + "(", ", ", ")", maxElements, inner(_))
-+      //case x: Traversable[_]            => x take maxElements map inner mkString (x.stringPrefix + "(", ", ", ")")
++      // TODO(ochafik) case x: scala.collection.Map[_, _]      => x.iterator take maxElements map mapInner mkString (x.stringPrefix + "(", ", ", ")")
++      case x: java.lang.Iterable[_]     => mkString(x.iterator, x.getClass.getSimpleName/*stringPrefix*/ + "(", ", ", ")", maxElements, inner(_))
++      // TODO(ochafik) case x: Traversable[_]            => x take maxElements map inner mkString (x.stringPrefix + "(", ", ", ")")
        case x: Product1[_] if isTuple(x) => "(" + inner(x._1) + ",)" // that special trailing comma
 -      case x: Product if isTuple(x)     => x.productIterator map inner mkString ("(", ",", ")")
 +      case x: Product if isTuple(x)     => mkString(map(x.productIterator, inner(_)), "(", ",", ")")
        case x                            => x.toString
      }
  
-@@ -369,6 +433,7 @@ object ScalaRunTime {
+@@ -343,6 +411,7 @@ object ScalaRunTime {
  
      nl + s + "\n"
    }
-+  /*
++  /* TODO(ochafik)
    private[scala] def checkZip(what: String, coll1: TraversableOnce[_], coll2: TraversableOnce[_]) {
      if (sys.props contains "scala.debug.zip") {
        val xs = coll1.toIndexedSeq
-@@ -383,4 +448,5 @@ object ScalaRunTime {
+@@ -356,5 +425,5 @@ object ScalaRunTime {
+         (new Exception).getStackTrace.drop(2).take(10).foreach(println)
        }
      }
-   }
-+  */
+-  }
++  }*/
  }

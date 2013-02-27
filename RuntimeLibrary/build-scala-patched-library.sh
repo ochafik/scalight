@@ -11,7 +11,7 @@ if [[ -d scala-scalight ]] ; then
 	cd scala-scalight || exit 1
 	
 	echo "Resetting sources"
-	git checkout src || fail "Failed to revert sources in `pwd`"
+	git reset --hard || fail "Failed to revert sources in `pwd`"
 	
 	echo "Deleting previous builds"
 	pwd
@@ -22,6 +22,7 @@ else
 	git clone https://github.com/scala/scala.git scala-scalight
 	
 	cd scala-scalight || exit 1
+	git checkout 2.10.x || fail "failed to checkout branch"
 	
 	dos2unix *.sh tools/*.sh || fail "Failed to fix script line endings"
 	
@@ -30,7 +31,7 @@ else
 		#local version=$(echo $sha1 | sed 's/ \?.*//')
 		#local version=${sha1% ?$jar_name}
 	  
-		sed -i.bak -E 's/\$\{sha1% \?\$jar_name\}/\$\(echo \$sha1 \| sed '"'s\/ \\\?.*\/\/'\)/" tools/binary-repo-lib.sh
+		#sed -i.bak -E 's/\$\{sha1% \?\$jar_name\}/\$\(echo \$sha1 \| sed '"'s\/ \\\?.*\/\/'\)/" tools/binary-repo-lib.sh
 	fi
 	
 	./pull-binary-libs.sh || fail "Failed to pull binary libs"
@@ -42,10 +43,12 @@ echo "Compiler 'locker' lib"
 ant locker.lib || fail "Failed to build scala"
 
 echo "Applying first patch"
-git apply ../scalight-compiler.diff || fail "Failed to apply first patch"
+git apply ../scalight-compiler.diff || fail "Failed to apply compiler patch"
+git apply ../scalight-reflect.diff || fail "Failed to apply reflect patch"
 
 echo "Deleting the 'locker' compiler, if it exists"
 rm -fR build/locker/all.complete build/locker/compiler.complete build/locker/classes/compiler
+rm -fR build/locker/all.complete build/locker/reflect.complete build/locker/classes/reflect
 
 echo "Compiling the 'locker' compiler"
 ant locker.comp || fail "Failed to recompile the 'locker' compiler"

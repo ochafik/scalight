@@ -1,115 +1,34 @@
-diff --git a/src/compiler/scala/reflect/internal/Definitions.scala b/src/compiler/scala/reflect/internal/Definitions.scala
-index 0612dcd..d5a02e2 100644
---- a/src/compiler/scala/reflect/internal/Definitions.scala
-+++ b/src/compiler/scala/reflect/internal/Definitions.scala
-@@ -448,10 +448,10 @@ trait Definitions extends reflect.api.StandardDefinitions {
-     // collections classes
-     lazy val ConsClass          = requiredClass[scala.collection.immutable.::[_]]
-     lazy val IterableClass      = requiredClass[scala.collection.Iterable[_]]
--    lazy val IteratorClass      = requiredClass[scala.collection.Iterator[_]]
-+    lazy val IteratorClass      = requiredClass[java.util.Iterator[_]]
-     lazy val ListClass          = requiredClass[scala.collection.immutable.List[_]]
-     lazy val SeqClass           = requiredClass[scala.collection.Seq[_]]
--    lazy val StringBuilderClass = requiredClass[scala.collection.mutable.StringBuilder]
-+    lazy val StringBuilderClass = requiredClass[java.lang.StringBuilder]
-     lazy val TraversableClass   = requiredClass[scala.collection.Traversable[_]]
- 
-     lazy val ListModule       = requiredModule[scala.collection.immutable.List.type]
-diff --git a/src/compiler/scala/reflect/internal/TreePrinters.scala b/src/compiler/scala/reflect/internal/TreePrinters.scala
-index b3e4318..b0d2d5f 100644
---- a/src/compiler/scala/reflect/internal/TreePrinters.scala
-+++ b/src/compiler/scala/reflect/internal/TreePrinters.scala
-@@ -8,6 +8,7 @@ package internal
- 
- import java.io.{ OutputStream, PrintWriter, StringWriter, Writer }
- import Flags._
-+import collection.JavaConversions._
- 
- trait TreePrinters extends api.TreePrinters { self: SymbolTable =>
- 
-diff --git a/src/compiler/scala/reflect/internal/TypeDebugging.scala b/src/compiler/scala/reflect/internal/TypeDebugging.scala
-index 54efef8..660139e 100644
---- a/src/compiler/scala/reflect/internal/TypeDebugging.scala
-+++ b/src/compiler/scala/reflect/internal/TypeDebugging.scala
-@@ -5,6 +5,7 @@
- 
- package scala.reflect
- package internal
-+import collection.JavaConversions._
- 
- trait TypeDebugging {
-   self: SymbolTable =>
-diff --git a/src/compiler/scala/reflect/internal/Types.scala b/src/compiler/scala/reflect/internal/Types.scala
-index 81582db..b1778f7 100644
---- a/src/compiler/scala/reflect/internal/Types.scala
-+++ b/src/compiler/scala/reflect/internal/Types.scala
-@@ -6751,9 +6751,9 @@ trait Types extends api.Types { self: SymbolTable =>
-     "scala.collection.Seq",
-     "scala.collection.Traversable",
-     "scala.collection.Iterable",
--    "scala.collection.mutable.StringBuilder",
-+    "java.lang.StringBuilder",
-     "scala.collection.IndexedSeq",
--    "scala.collection.Iterator")
-+    "java.util.Iterator")
- 
- 
-   /** The maximum number of recursions allowed in toString
-diff --git a/src/compiler/scala/reflect/reify/codegen/Util.scala b/src/compiler/scala/reflect/reify/codegen/Util.scala
-index bb369a1..c7232a8 100644
---- a/src/compiler/scala/reflect/reify/codegen/Util.scala
-+++ b/src/compiler/scala/reflect/reify/codegen/Util.scala
+diff --git a/src/compiler/scala/reflect/reify/codegen/GenUtils.scala b/src/compiler/scala/reflect/reify/codegen/GenUtils.scala
+index 49877b4..8117d62 100644
+--- a/src/compiler/scala/reflect/reify/codegen/GenUtils.scala
++++ b/src/compiler/scala/reflect/reify/codegen/GenUtils.scala
 @@ -1,5 +1,6 @@
  package scala.reflect.reify
  package codegen
-+import collection.JavaConversions._
++import scala.collection.JavaConversions._
  
- trait Util {
+ trait GenUtils {
    self: Reifier =>
 diff --git a/src/compiler/scala/reflect/reify/phases/Calculate.scala b/src/compiler/scala/reflect/reify/phases/Calculate.scala
-index 93ef4647..dbcfd39 100644
+index 4d1e22a..a7efa3b 100644
 --- a/src/compiler/scala/reflect/reify/phases/Calculate.scala
 +++ b/src/compiler/scala/reflect/reify/phases/Calculate.scala
 @@ -1,5 +1,6 @@
  package scala.reflect.reify
  package phases
-+import collection.JavaConversions._
++import scala.collection.JavaConversions._
  
  trait Calculate {
    self: Reifier =>
 diff --git a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala b/src/compiler/scala/tools/nsc/ast/NodePrinters.scala
-index 5d849b9..db0e185 100644
+index deea4de..fe6d8d4 100644
 --- a/src/compiler/scala/tools/nsc/ast/NodePrinters.scala
 +++ b/src/compiler/scala/tools/nsc/ast/NodePrinters.scala
 @@ -9,6 +9,7 @@ package ast
- import compat.Platform.EOL
+ import scala.compat.Platform.EOL
  import symtab.Flags._
- import language.postfixOps
-+import collection.JavaConversions._
+ import scala.language.postfixOps
++import scala.collection.JavaConversions._
  
  /** The object `nodePrinter` converts the internal tree
   *  representation to a string.
-diff --git a/src/compiler/scala/tools/nsc/interpreter/ProductCompletion.scala b/src/compiler/scala/tools/nsc/interpreter/ProductCompletion.scala
-index dc4582e..5340520 100644
---- a/src/compiler/scala/tools/nsc/interpreter/ProductCompletion.scala
-+++ b/src/compiler/scala/tools/nsc/interpreter/ProductCompletion.scala
-@@ -5,6 +5,7 @@
- 
- package scala.tools.nsc
- package interpreter
-+import collection.JavaConversions._
- 
- class SeqCompletion[T](elems: Seq[T]) extends CompletionAware {
-   lazy val completions = elems.indices.toList map ("(%d)" format _)
-diff --git a/src/compiler/scala/tools/nsc/util/Tracer.scala b/src/compiler/scala/tools/nsc/util/Tracer.scala
-index acbf60d..42b3208 100644
---- a/src/compiler/scala/tools/nsc/util/Tracer.scala
-+++ b/src/compiler/scala/tools/nsc/util/Tracer.scala
-@@ -8,6 +8,7 @@ package util
- 
- import java.io.PrintStream
- import scala.runtime.ScalaRunTime
-+import collection.JavaConversions._
- 
- class Tracer(enabled: () => Boolean) {
-   def out: PrintStream = System.out
